@@ -1,15 +1,17 @@
 import {NavigationContainer} from '@react-navigation/native';
-import {useEffect} from 'react';
-import * as React from 'react';
-import {Appearance, StyleSheet} from 'react-native';
-import {createNativeStackNavigator} from 'react-native-screens/native-stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React, {useEffect} from 'react';
+import {Appearance} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {ThemeProvider} from 'styled-components/native';
+
 import {RootState} from './reducers';
 import {setTheme} from './reducers/themeSlice';
+import {dark, light} from './styles/theme';
+
 import LoginMainScreen from './screens/LoginMainScreen';
 import LoginScreen from './screens/LoginScreen';
-import {dark, light} from './styles/theme';
+import {firebaseApp} from './functions/Firebase';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +26,8 @@ const App: React.FC = () => {
 
     return () => subscription.remove();
   }, [dispatch]);
+
+  firebaseApp();
 
   return (
     <ThemeProvider theme={theme === 'dark' ? dark : light}>
@@ -44,4 +48,5 @@ const App: React.FC = () => {
     </ThemeProvider>
   );
 };
+
 export default App;

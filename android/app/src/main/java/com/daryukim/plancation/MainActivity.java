@@ -1,4 +1,4 @@
-package com.rn_boiler_plate;
+package com.daryukim.plancation;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

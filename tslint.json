@@ -20,14 +20,14 @@
     // core lint rules
     "ban": {
       "options": [
-        {
-          "name": "parseInt",
-          "message": "use #type-coercion -> Number(val)"
-        },
-        {
-          "name": "parseFloat",
-          "message": "use #type-coercion -> Number(val)"
-        },
+//        {
+//          "name": "parseInt",
+//          "message": "use #type-coercion -> Number(val)"
+//        },
+//        {
+//          "name": "parseFloat",
+//          "message": "use #type-coercion -> Number(val)"
+//        },
         {
           "name": "Array",
           "message": "use #array-constructor"

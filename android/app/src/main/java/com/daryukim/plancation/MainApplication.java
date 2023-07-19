@@ -1,6 +1,8 @@
-package com.rn_boiler_plate;
+package com.daryukim.plancation;
 
 import android.app.Application;
+
+import com.daryukim.plancation.BuildConfig;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
