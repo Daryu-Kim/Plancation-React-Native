@@ -1,21 +1,23 @@
+import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Appearance} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {ThemeProvider} from 'styled-components/native';
 
 import {RootState} from './reducers';
 import {setTheme} from './reducers/themeSlice';
-import {dark, light} from './styles/theme';
-
+import HomeScreen from './screens/HomeScreen';
 import LoginMainScreen from './screens/LoginMainScreen';
 import LoginScreen from './screens/LoginScreen';
-import {firebaseApp} from './functions/Firebase';
+import {dark, light} from './styles/theme';
 
 const Stack = createNativeStackNavigator();
 
 const App: React.FC = () => {
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
   const theme = useSelector((state: RootState) => state.theme);
   const dispatch = useDispatch();
 
@@ -27,20 +29,39 @@ const App: React.FC = () => {
     return () => subscription.remove();
   }, [dispatch]);
 
-  firebaseApp();
+  useEffect(() => {
+    return auth().onAuthStateChanged(onAuthStateChanged);
+  }, [onAuthStateChanged]);
+
+  if (initializing) {
+    return null;
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  function onAuthStateChanged(authUser) {
+    setUser(authUser);
+    if (initializing) {
+      setInitializing(false);
+    }
+  }
 
   return (
     <ThemeProvider theme={theme === 'dark' ? dark : light}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
+        <Stack.Navigator initialRouteName={user ? 'Home' : 'LoginMain'}>
           <Stack.Screen
-            name="Home"
+            name="LoginMain"
             component={LoginMainScreen}
             options={{headerShown: false}}
           />
           <Stack.Screen
             name="Login"
             component={LoginScreen}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
             options={{headerShown: false}}
           />
         </Stack.Navigator>

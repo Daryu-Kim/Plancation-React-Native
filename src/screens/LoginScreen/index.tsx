@@ -1,5 +1,9 @@
+import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {SetStateAction, useState} from 'react';
-import {Alert, Dimensions, Platform, ToastAndroid, View} from 'react-native';
+import {View} from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {WithLocalSvg} from 'react-native-svg';
 import {useSelector} from 'react-redux';
@@ -15,7 +19,7 @@ import LogoDark from '../../assets/logoDarkWithoutGradient.svg';
 import LogoLight from '../../assets/logoLightWithoutGradient.svg';
 import {RootState} from '../../reducers';
 import fonts from '../../styles/fonts';
-import { deviceHeight, deviceWidth } from "../../styles/globalStyles";
+import {deviceWidth} from '../../styles/globalStyles';
 import {
   AnotherLoginText,
   AnotherLoginTextDivider,
@@ -51,34 +55,98 @@ function LoginScreen({navigation}) {
   const hintTextColor = isDarkTheme ? '#8f91c7b3' : '#494b7c80';
   const hidePasswordColor = hidePassword ? hintTextColor : '#735bf2';
 
-  const onPressedLoginButton = (): void => {
-    switch (Platform.OS) {
-      case 'android':
-        ToastAndroid.show(`${email}, ${password}`, 1);
-        break;
-      case 'ios':
-        Alert.alert('입력 내용', `${email}, ${password}`);
-        break;
-      default:
-        break;
+  async function onPressedLoginButton() {
+    if (email.length === 0 || password.length === 0) {
+      return;
     }
-  };
+    try {
+      await auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(credential => {
+          EncryptedStorage.setItem('currentCalendar', credential.user.uid).then(
+            _ => {
+              // Go To HomeScreen
+              navigation.navigate('Home');
+            },
+          );
+        })
+        .catch(error => console.error(error.message));
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
-  const onPressedGoogleLoginButton = (): void => {
-    switch (Platform.OS) {
-      case 'android':
-        ToastAndroid.show(`${email}, ${password}`, 1);
-        break;
-      case 'ios':
-        Alert.alert('입력 내용', `${email}, ${password}`);
-        break;
-      default:
-        break;
+  const onPressedGoogleLoginButton = async () => {
+    GoogleSignin.configure({
+      webClientId:
+        '33008958055-9a5g8qkd4702t6sihtop7t0c07gsqqio.apps.googleusercontent.com',
+    });
+    try {
+      const {idToken} = await GoogleSignin.signIn();
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      const userCredential = await auth().signInWithCredential(
+        googleCredential,
+      );
+
+      const userDocument = await firestore()
+        .collection('Users')
+        .doc(userCredential.user.uid)
+        .get();
+
+      if (userDocument.exists) {
+        await setCurrentCalendar(userCredential.user.uid);
+      } else {
+        const isCreatedUserData: boolean = await createUserDataInFirestore(
+          userCredential.user,
+        );
+        const isCreatedCalendar: boolean = await createCalendarInFirestore(
+          userCredential.user,
+        );
+        if (isCreatedUserData && isCreatedCalendar) {
+          await setCurrentCalendar(userCredential.user.uid);
+        }
+      }
+      // return
+    } catch (error) {
+      console.error(error);
     }
   };
 
   const onPressedHidePasswordButton = (): void =>
     setHidePassword(!hidePassword);
+
+  const createUserDataInFirestore = async (
+    user: FirebaseAuthTypes.User,
+  ): Promise<boolean> => {
+    await firestore().collection('Users').doc(user.uid).set({
+      userID: user.uid,
+      userImagePath: user.photoURL,
+      userName: user.displayName,
+    });
+
+    return true;
+  };
+
+  const createCalendarInFirestore = async (
+    user: FirebaseAuthTypes.User,
+  ): Promise<boolean> => {
+    await firestore()
+      .collection('Calendars')
+      .doc(user.uid)
+      .set({
+        calendarAuthorID: user.uid,
+        calendarTitle: '개인',
+        calendarUsers: [user.uid],
+        calendarID: user.uid,
+      });
+
+    return true;
+  };
+
+  const setCurrentCalendar = async (uid: string): Promise<void> => {
+    await EncryptedStorage.setItem('currentCalendar', uid);
+    navigation.navigate('Home');
+  };
 
   return (
     <SafeAreaProvider>
@@ -136,7 +204,11 @@ function LoginScreen({navigation}) {
               <AnotherLoginTextDivider />
             </AnotherLoginTextLayout>
             <GoogleLoginButton onPress={onPressedGoogleLoginButton}>
-              <WithLocalSvg asset={Google} width={parseFloat(deviceWidth) * 24} height={parseFloat(deviceWidth) * 24} />
+              <WithLocalSvg
+                asset={Google}
+                width={parseFloat(deviceWidth) * 24}
+                height={parseFloat(deviceWidth) * 24}
+              />
               <GoogleLoginText style={fonts.bold}>
                 Google로 로그인
               </GoogleLoginText>

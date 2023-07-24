@@ -1,3 +1,4 @@
+import auth from '@react-native-firebase/auth';
 import {Dimensions, View} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {WithLocalSvg} from 'react-native-svg';
@@ -17,16 +18,13 @@ import {
   TermsText,
   WelcomeText,
 } from './styles';
-import {getAuth} from "firebase/auth";
-import {firebaseApp} from "../../functions/Firebase";
 
 // @ts-ignore
 function LoginMainScreen({navigation}) {
   const isDarkTheme: boolean =
     useSelector((state: RootState) => state.theme) === 'dark';
-  const auth = getAuth(firebaseApp());
-  if (auth.currentUser != null) {
-    navigation.navigate('Detail');
+  if (auth().currentUser != null) {
+    navigation.navigate('Home');
   }
 
   return (
