@@ -74,7 +74,7 @@ function HomeScreen({navigation}) {
           <View style={{flexDirection: 'row', gap: 8}}>
             <HeaderButton
               onPress={() => {
-                console.log('Search');
+                navigation.navigate('Search');
               }}>
               <WithLocalSvg
                 asset={SearchIcon}
@@ -86,7 +86,7 @@ function HomeScreen({navigation}) {
             </HeaderButton>
             <HeaderButton
               onPress={() => {
-                console.log('Alert');
+                navigation.navigate('Alert');
               }}>
               <WithLocalSvg
                 asset={AlertIcon}
