@@ -32,7 +32,6 @@ function LoginMainScreen({navigation}) {
           index: 0,
           routes: [{name: 'Home'}],
         });
-        // navigation.navigate('Home');
       }
     });
 
