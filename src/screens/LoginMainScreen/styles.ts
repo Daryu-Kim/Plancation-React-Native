@@ -1,9 +1,10 @@
-import { SafeAreaView } from "react-native-safe-area-context";
-import styled from "styled-components/native";
+import {SafeAreaView} from 'react-native-safe-area-context';
+import styled from 'styled-components/native';
+import {size} from '../../styles/globalStyles';
 
-export const ParentView = styled(SafeAreaView) `
+export const ParentView = styled(SafeAreaView)`
   background-color: ${props => props.theme.color.background};
-  padding: 16px 24px;
+  padding: ${size(16)} ${size(24)};
   flex: 1;
   justify-content: space-between;
   display: flex;
@@ -11,49 +12,49 @@ export const ParentView = styled(SafeAreaView) `
 
 export const WelcomeText = styled.Text`
   text-align: center;
-  font-size: 18px;
+  font-size: ${size(18)};
   color: ${props => props.theme.color.primary};
 `;
 
 export const TermsText = styled.Text`
   text-align: center;
-  font-size: 12px;
+  font-size: ${size(12)};
   color: ${props => props.theme.color.hint_text};
 `;
 
 export const JoinButton = styled.TouchableOpacity`
   width: 100%;
-  height: 42px;
-  border-width: 1px;
+  height: ${size(42)};
+  border-width: ${size(1)};
   border-style: solid;
   border-color: ${props => props.theme.color.primary};
-  border-radius: 100px;
+  border-radius: ${size(100)};
   background: transparent;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 24px;
+  margin-top: ${size(24)};
 `;
 
 export const LoginButton = styled.TouchableOpacity`
   width: 100%;
-  height: 42px;
-  border-radius: 100px;
+  height: ${size(42)};
+  border-radius: ${size(100)};
   background: ${props => props.theme.color.primary};
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 16px;
+  margin-top: ${size(16)};
 `;
 
 export const JoinButtonText = styled.Text`
   text-align: center;
   color: ${props => props.theme.color.primary};
-  font-size: 18px;
+  font-size: ${size(18)};
 `;
 
 export const LoginButtonText = styled.Text`
   text-align: center;
   color: ${props => props.theme.color.inverse_text};
-  font-size: 18px;
+  font-size: ${size(18)};
 `;

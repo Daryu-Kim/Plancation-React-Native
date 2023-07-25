@@ -1,4 +1,5 @@
 import auth from '@react-native-firebase/auth';
+import {useEffect} from 'react';
 import {Dimensions, View} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {WithLocalSvg} from 'react-native-svg';
@@ -23,9 +24,20 @@ import {
 function LoginMainScreen({navigation}) {
   const isDarkTheme: boolean =
     useSelector((state: RootState) => state.theme) === 'dark';
-  if (auth().currentUser != null) {
-    navigation.navigate('Home');
-  }
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (auth().currentUser != null) {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Home'}],
+        });
+        // navigation.navigate('Home');
+      }
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <SafeAreaProvider>

@@ -6,6 +6,7 @@ import {View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {WithLocalSvg} from 'react-native-svg';
+import Toast from 'react-native-toast-message';
 import {useSelector} from 'react-redux';
 // @ts-ignore
 import Eye from '../../assets/ic_eye.svg';
@@ -17,6 +18,7 @@ import Google from '../../assets/ic_google.svg';
 import LogoDark from '../../assets/logoDarkWithoutGradient.svg';
 // @ts-ignore
 import LogoLight from '../../assets/logoLightWithoutGradient.svg';
+import FirebaseExceptionMessage from "../../modules/FirebaseExceptionMessage";
 import {RootState} from '../../reducers';
 import fonts from '../../styles/fonts';
 import {deviceWidth} from '../../styles/globalStyles';
@@ -57,6 +59,12 @@ function LoginScreen({navigation}) {
 
   async function onPressedLoginButton() {
     if (email.length === 0 || password.length === 0) {
+      Toast.show({
+        type: 'log',
+        text1: '로그인 오류',
+        text2: '빈 필드가 있습니다!',
+      });
+
       return;
     }
     try {
@@ -66,11 +74,20 @@ function LoginScreen({navigation}) {
           EncryptedStorage.setItem('currentCalendar', credential.user.uid).then(
             _ => {
               // Go To HomeScreen
-              navigation.navigate('Home');
+              navigation.reset({
+                index: 0,
+                routes: [{name: 'Home'}],
+              });
             },
           );
         })
-        .catch(error => console.error(error.message));
+        .catch(error => {
+          Toast.show({
+            type: 'error',
+            text1: FirebaseExceptionMessage(error),
+          });
+          console.error(error.code);
+        });
     } catch (e) {
       console.error(e);
     }
@@ -118,34 +135,45 @@ function LoginScreen({navigation}) {
   const createUserDataInFirestore = async (
     user: FirebaseAuthTypes.User,
   ): Promise<boolean> => {
-    await firestore().collection('Users').doc(user.uid).set({
-      userID: user.uid,
-      userImagePath: user.photoURL,
-      userName: user.displayName,
-    });
+    try {
+      await firestore().collection('Users').doc(user.uid).set({
+        userID: user.uid,
+        userImagePath: user.photoURL,
+        userName: user.displayName,
+      });
 
-    return true;
+      return true;
+    } catch (e) {
+      return false;
+    }
   };
 
   const createCalendarInFirestore = async (
     user: FirebaseAuthTypes.User,
   ): Promise<boolean> => {
-    await firestore()
-      .collection('Calendars')
-      .doc(user.uid)
-      .set({
-        calendarAuthorID: user.uid,
-        calendarTitle: '개인',
-        calendarUsers: [user.uid],
-        calendarID: user.uid,
-      });
+    try {
+      await firestore()
+        .collection('Calendars')
+        .doc(user.uid)
+        .set({
+          calendarAuthorID: user.uid,
+          calendarTitle: '개인',
+          calendarUsers: [user.uid],
+          calendarID: user.uid,
+        });
 
-    return true;
+      return true;
+    } catch (e) {
+      return false;
+    }
   };
 
   const setCurrentCalendar = async (uid: string): Promise<void> => {
     await EncryptedStorage.setItem('currentCalendar', uid);
-    navigation.navigate('Home');
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Home'}],
+    });
   };
 
   return (

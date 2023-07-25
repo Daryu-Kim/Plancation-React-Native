@@ -1,10 +1,23 @@
-import {Text, View} from 'react-native';
+import auth from '@react-native-firebase/auth';
+import {Button, View} from 'react-native';
 
-const HomeScreen = () => {
+// @ts-ignore
+function HomeScreen({navigation}) {
+  const onPressedLogOutButton = () => {
+    auth()
+      .signOut()
+      .then(_ => {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'LoginMain'}],
+        });
+      });
+  };
+
   return (
     <View>
-      <Text>Home Screen</Text>
+      <Button title="로그아웃" onPress={onPressedLogOutButton} />
     </View>
   );
-};
+}
 export default HomeScreen;
