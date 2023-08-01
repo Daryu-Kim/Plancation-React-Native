@@ -22,21 +22,19 @@ import MenuIcon from '../../assets/ic_menu.svg';
 import SearchIcon from '../../assets/ic_search.svg';
 import AlertIcon from '../../assets/ic_alert.svg';
 import {RootState} from '../../reducers';
+import colors from "../../styles/colors";
 import fonts from '../../styles/fonts';
 import CalendarTab from '../../tabs/CalendarTab';
 import TodoTab from '../../tabs/TodoTab';
 import {Header, HeaderButton, HeaderText} from './styles';
 
+const Tab = createBottomTabNavigator();
+
 // @ts-ignore
 function HomeScreen({navigation}) {
   const [headerTitle, setHeaderTitle] = useState('');
-  const Tab = createBottomTabNavigator();
   const isDarkTheme: boolean =
     useSelector((state: RootState) => state.theme) === 'dark';
-  const primaryColor = isDarkTheme ? '#8f91c7' : '#494b7c';
-  const backgroundColor = isDarkTheme ? '#161625' : '#FFF';
-  const backgroundDividerColor = isDarkTheme ? '#262635' : '#EEE';
-  const hintTextColor = isDarkTheme ? '#8f91c7b3' : '#494b7c80';
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -59,13 +57,13 @@ function HomeScreen({navigation}) {
           <View style={{flexDirection: 'row', gap: 12, alignItems: 'center'}}>
             <HeaderButton
               onPress={() => {
-                console.log('Menu');
+                navigation.openDrawer();
               }}>
               <WithLocalSvg
                 asset={MenuIcon}
                 width={24}
                 height={24}
-                stroke={primaryColor}
+                stroke={colors(isDarkTheme, 'primaryColor')}
                 strokeWidth={2}
               />
             </HeaderButton>
@@ -80,7 +78,7 @@ function HomeScreen({navigation}) {
                 asset={SearchIcon}
                 width={24}
                 height={24}
-                stroke={primaryColor}
+                stroke={colors(isDarkTheme, 'primaryColor')}
                 strokeWidth={2}
               />
             </HeaderButton>
@@ -92,7 +90,7 @@ function HomeScreen({navigation}) {
                 asset={AlertIcon}
                 width={24}
                 height={24}
-                stroke={primaryColor}
+                stroke={colors(isDarkTheme, 'primaryColor')}
                 strokeWidth={2}
               />
             </HeaderButton>
@@ -102,11 +100,11 @@ function HomeScreen({navigation}) {
       <Tab.Navigator
         initialRouteName="Calendar"
         screenOptions={{
-          tabBarActiveTintColor: primaryColor,
-          tabBarInactiveTintColor: hintTextColor,
+          tabBarActiveTintColor: colors(isDarkTheme, 'primaryColor'),
+          tabBarInactiveTintColor: colors(isDarkTheme, 'hintTextColor'),
           tabBarStyle: {
-            backgroundColor,
-            borderColor: backgroundDividerColor,
+            backgroundColor: colors(isDarkTheme, 'backgroundColor'),
+            borderColor: colors(isDarkTheme, 'dividerColor'),
             borderTopWidth: 1,
             height: 52,
             paddingHorizontal: 16,
@@ -126,7 +124,7 @@ function HomeScreen({navigation}) {
                 asset={CalendarIcon}
                 width={24}
                 height={24}
-                fill={focused ? primaryColor : hintTextColor}
+                fill={focused ? colors(isDarkTheme, 'primaryColor') : colors(isDarkTheme, 'hintTextColor')}
               />
             ),
             headerShown: false,
@@ -147,7 +145,7 @@ function HomeScreen({navigation}) {
                 asset={TodoIcon}
                 width={24}
                 height={24}
-                fill={focused ? primaryColor : hintTextColor}
+                fill={focused ? colors(isDarkTheme, 'primaryColor') : colors(isDarkTheme, 'hintTextColor')}
               />
             ),
             headerShown: false,
@@ -168,7 +166,7 @@ function HomeScreen({navigation}) {
                 asset={AIIcon}
                 width={24}
                 height={24}
-                fill={focused ? primaryColor : hintTextColor}
+                fill={focused ? colors(isDarkTheme, 'primaryColor') : colors(isDarkTheme, 'hintTextColor')}
               />
             ),
             headerShown: false,
@@ -189,7 +187,7 @@ function HomeScreen({navigation}) {
                 asset={DiaryIcon}
                 width={24}
                 height={24}
-                fill={focused ? primaryColor : hintTextColor}
+                fill={focused ? colors(isDarkTheme, 'primaryColor') : colors(isDarkTheme, 'hintTextColor')}
               />
             ),
             headerShown: false,
@@ -210,7 +208,7 @@ function HomeScreen({navigation}) {
                 asset={AccountIcon}
                 width={24}
                 height={24}
-                fill={focused ? primaryColor : hintTextColor}
+                fill={focused ? colors(isDarkTheme, 'primaryColor') : colors(isDarkTheme, 'hintTextColor')}
               />
             ),
             headerShown: false,
